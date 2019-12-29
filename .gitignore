@@ -29,12 +29,16 @@
 *.dylib
 
 # Executables
+*.run
 *.exe
 *.out
 *.app
 *.i*86
 *.x86_64
 *.hex
+
+# Testing and Benchmark files
+*.ans
 
 # Debug files
 *.dSYM/
