@@ -1,6 +1,8 @@
 #ifndef ising_h
 #define ising_h
 
+#include <stdint.h>
+
 //! Ising model evolution
 /*!
 
@@ -11,6 +13,6 @@
 
   NOTE: Both matrices G and w are stored in row-major format.
 */
-void ising( int *G, double *w, int k, int n);
+void ising( int8_t *G, float *w, int k, int n);
 
 #endif

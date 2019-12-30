@@ -11,6 +11,7 @@ clean:
 test_v0: v0
 	./v0.run
 	diff test/conf-11.bin test/conf-11.ans
+	@echo 'Test Passed!!!'
 
 v0: V0_sequential.o main.o
 	$(CC) $(FLAGS) $(INCLUDES) V0_sequential.o main.o -o v0.run

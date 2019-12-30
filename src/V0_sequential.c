@@ -1,19 +1,20 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #define diff 1e-6f
 
-void ising( int *G, double *w, int k, int n)
+void ising( int8_t *G, float *w, int k, int n)
 {
-	//convert weight array to double[5][5]
-	double (*weightArr)[5] = ( double(*)[5] )w;
+	//convert weight array to float[5][5]
+	float (*weightArr)[5] = ( float(*)[5] )w;
 	
 	//set valid indexes to [-2..2][-2..2]
-	weightArr = ( double(*)[5] ) &weightArr[2][2];
-	weightArr[0][0] = 0.0;
+	weightArr = ( float(*)[5] ) &weightArr[2][2];
+	weightArr[0][0] = 0.0f;
 	
-	int (*readArr) [n] = ( int(*)[n] )G;
-	int (*writeArr)[n] = malloc(n*n*sizeof(int));
+	int8_t (*readArr) [n] = ( int8_t(*)[n] )G;
+	int8_t (*writeArr)[n] = malloc(n*n*sizeof(int8_t));
 	
 	for (int i=1; i<=k; i++)
 	{
@@ -30,13 +31,13 @@ void ising( int *G, double *w, int k, int n)
 						int x = (col+j+n)%n;
 						influence += weightArr[i][j]*readArr[y][x];
 					}
-				if (influence<diff && influence>-diff) writeArr[row][col] = readArr[row][col];
-				else if (influence<0) writeArr[row][col] = -1;
-				else writeArr[row][col] = 1;		
+				writeArr[row][col] = readArr[row][col];
+				if (influence < -diff) 	 	writeArr[row][col] = -1;
+				else if (influence > diff)	writeArr[row][col] = 1;		
 			}
-		int (*temp)[n] = readArr;
+		int8_t (*temp)[n] = readArr;
 		readArr = writeArr;
 		writeArr = temp;
 	}
-	if (k%2==1) memcpy(G,readArr,n*n*sizeof(int));
+	if (k%2==1) memcpy(G,readArr,n*n*sizeof(uint8_t));
 }
