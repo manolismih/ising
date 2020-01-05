@@ -2,6 +2,7 @@
 #define ising_h
 
 #include <stdint.h>
+#define diff 1e-6f
 
 //! Ising model evolution
 /*!

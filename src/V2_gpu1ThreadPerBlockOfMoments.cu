@@ -1,30 +1,9 @@
-/**************************************************************
- * NOTE: This code respects the initial interface, so that it
- * succesfully passes the online grader. The rest versions
- * optimize for speed and space by using floats and 8-bit ints
- * 
- **************************************************************/ 
  #include <stdlib.h>
  #include <string.h>
- #include <stdio.h>
- #include "../inc/ising.h"
- 
- 
- #define diff 1e-6f
- 
- // Debugging function that prints the first nXn elements of a sizeXsize array
- void print_nn_array(int *x, int n, int size){
-     for(int i=0; i<n; ++i){
-         for(int j=0; j<n; ++j){
-             printf("%d ", x[i*size + j]);
-         }
-         printf("\n");
-     }
-     printf("\n");
- }
- 
+ #include "ising.h"
+
  // CUDA Kernel
- __global__ void computeMoment(int *readArr, int *writeArr, double *weightArr, int n, int tileSize){
+ __global__ void computeMoment(int8_t *readArr, int8_t *writeArr, float *weightArr, int n, int tileSize){
      int row_init = blockIdx.x*(blockDim.x*tileSize) + threadIdx.x*tileSize;
      int col_init = blockIdx.y*(blockDim.y*tileSize) + threadIdx.y*tileSize;
  
@@ -51,7 +30,7 @@
                  }
              
                  writeArr[row*n + col] = readArr[row*n + col];
-                 if 		(influence<-diff)	writeArr[row*n + col] = -1;
+                 if 	(influence<-diff)	writeArr[row*n + col] = -1;
                  else if (influence>diff)	writeArr[row*n + col] = 1;
                  __syncthreads();
              }
@@ -59,22 +38,22 @@
      }
  }
  
- void ising(int *G, double *w, int k, int n)
+ void ising(int8_t *G, float *w, int k, int n)
  {
  
      // Allocate memory for the 3 arrays with cudaMallocManaged()
      // because they will be used inside the kernel
      // The return err values are for debugging only
-     int *readArr, *writeArr;
-     cudaError_t err1 = cudaMallocManaged(&readArr, n*n*sizeof(int));
-     cudaError_t err2 = cudaMallocManaged(&writeArr,n*n*sizeof(int));
-     double *weightArr_d;
-     cudaError_t er3 = cudaMallocManaged(&weightArr_d, 5*5*sizeof(double));
+     int8_t *readArr, *writeArr;
+     cudaError_t err1 = cudaMallocManaged(&readArr, n*n*sizeof(int8_t));
+     cudaError_t err2 = cudaMallocManaged(&writeArr,n*n*sizeof(int8_t));
+     float *weightArr_d;
+     cudaError_t er3 = cudaMallocManaged(&weightArr_d, 5*5*sizeof(float));
  
      // Copy the contents of input arrays inside 
      // the ones we will use inside kernel
-     memcpy(readArr, G, n*n*sizeof(int));
-     memcpy(weightArr_d, w, 5*5*sizeof(double));
+     memcpy(readArr, G, n*n*sizeof(int8_t));
+     memcpy(weightArr_d, w, 5*5*sizeof(float));
  
  
      //set valid indexes to [-2..2][-2..2]
@@ -103,7 +82,7 @@
          cudaDeviceSynchronize();
  
          // Swap read and write arrays
-         int *temp = readArr;
+         int8_t *temp = readArr;
          readArr = writeArr;
          writeArr = temp;
      }
@@ -116,47 +95,3 @@
      cudaFree( writeArr 	  );
      cudaFree( weightArr_d );
  }
- 
- int main()
- {
-     FILE* fin = fopen("../test/conf-init.bin","rb");
-     FILE* fout = fopen("../test/conf-11.ans","wb");
- 
-     int n=517, k=11;
- 
-     double weights[5][5] = { {0.004f,0.016f,0.026f,0.016f,0.004f},
-                              {0.016f,0.071f,0.117f,0.071f,0.016f},
-                              {0.026f,0.117f,0.000f,0.117f,0.026f},
-                              {0.016f,0.071f,0.117f,0.071f,0.016f},
-                              {0.004f,0.016f,0.026f,0.016f,0.004f}};
- 
- 
-     int *latticeArr = (int *) malloc(n*n*sizeof(int));
- 
-     //read from binary
-     for (int row=0; row<n; row++)
-     {
-         for (int col=0; col<n; col++)
-         {
-             int spin;
-             fread(&spin, sizeof(int), 1, fin);
-             latticeArr[row*n + col] = spin;
-         }
-     }
- 
-     ising(latticeArr, (double*)weights, k, n);
- 
-     //write to binary
-     for (int row=0; row<n; row++)
-     {
-         for (int col=0; col<n; col++)
-         {
-             int spin = latticeArr[row*n + col];
-             fwrite(&spin, sizeof(int), 1, fout);
-         }
-     }
- 
-     free( latticeArr );
-     return 0;
- }
- 

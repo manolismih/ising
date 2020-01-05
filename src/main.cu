@@ -13,7 +13,7 @@ int main()
 							 {0.026f,0.117f,0.000f,0.117f,0.026f},
 							 {0.016f,0.071f,0.117f,0.071f,0.016f},
 							 {0.004f,0.016f,0.026f,0.016f,0.004f}};
-	int8_t *latticeArr = malloc(n*n*sizeof(int8_t));
+	int8_t *latticeArr = ( int8_t* ) malloc(n*n*sizeof(int8_t));
 	
 	//read from binary
 	for (int row=0; row<n; row++)

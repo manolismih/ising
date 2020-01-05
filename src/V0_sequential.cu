@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-
-#define diff 1e-6f
+#include "ising.h"
 
 void ising( int8_t *G, float *w, int k, int n)
 {
@@ -14,7 +12,7 @@ void ising( int8_t *G, float *w, int k, int n)
 	weightArr[0][0] = 0.0f;
 	
 	int8_t (*readArr) [n] = ( int8_t(*)[n] )G;
-	int8_t (*writeArr)[n] = malloc(n*n*sizeof(int8_t));
+	int8_t (*writeArr)[n] = ( int8_t(*)[n] )malloc(n*n*sizeof(int8_t));
 	
 	for (int i=1; i<=k; i++)
 	{
