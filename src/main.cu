@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <sys/time.h>
 
 int main()
 {
@@ -24,7 +25,15 @@ int main()
 			latticeArr[row*n +col] = (int8_t)spin;
 		}
 		
-	ising(latticeArr,(float*)weights,k,n);
+	double elapsedTime=0.0;
+	struct timeval start, end;
+
+	gettimeofday(&start, NULL);
+	ising(latticeArr,(float*)weights,k,n); // !!!Actual computation
+	gettimeofday(&end, NULL);
+	
+	elapsedTime += end.tv_sec -start.tv_sec +(end.tv_usec-start.tv_usec)/1e6;
+	printf("\nComputations done in %lf seconds\n", elapsedTime);
 	
 	//write to binary
 	for (int row=0; row<n; row++)
@@ -33,4 +42,5 @@ int main()
 			int spin = latticeArr[row*n +col];
 			fwrite(&spin,sizeof(int),1,fout);
 		}
+	return 0;
 }

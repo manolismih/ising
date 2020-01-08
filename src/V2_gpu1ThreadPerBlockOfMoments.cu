@@ -89,7 +89,7 @@
  
      //The final result now is in readArr. Copy the contents
      // in array G
-     memcpy(G, readArr, n*n*sizeof(int));
+     memcpy(G, readArr, n*n*sizeof(int8_t));
  
      cudaFree( readArr     );
      cudaFree( writeArr 	  );
