@@ -4,14 +4,14 @@
 
  // CUDA Kernel
  __global__ void computeMoment(int8_t *readArr, int8_t *writeArr, float *weightArr, int n, int tileSize){
-     int row_init = blockIdx.x*(blockDim.x*tileSize) + threadIdx.x*tileSize;
-     int col_init = blockIdx.y*(blockDim.y*tileSize) + threadIdx.y*tileSize;
+     int row_init = blockIdx.x*blockDim.x + threadIdx.x;
+     int col_init = blockIdx.y*blockDim.y + threadIdx.y;
  
      // Assign each thread a tileSizeXtileSize tile
      for(int ii=0; ii<tileSize; ++ii){
          for (int jj=0; jj<tileSize; ++jj){
-             int row = row_init + ii;
-             int col = col_init + jj;
+             int row = row_init + ii*tileSize;
+             int col = col_init + jj*tileSize;
  
              // If coordinates are between boundaries
              // update the write array accordingly

@@ -1,4 +1,4 @@
-FLAGS = -O3
+FLAGS = -ccbin clang-3.8
 INCLUDES = -I ./inc
 
 ########################################################################
@@ -7,21 +7,21 @@ clean:
 	find -name "*.o" -or -name "*.run" | xargs rm -f
 	
 test_v0: v0
-	./v0.run
-	diff test/conf-11.bin test/conf-11.ans
-	@echo 'Test Passed!!!'
+	nvprof ./v0.run
+	# diff test/conf-11.bin test/conf-11.ans
+	# @echo 'Test Passed!!!'
 test_v1: v1
-	./v1.run
-	diff test/conf-11.bin test/conf-11.ans
-	@echo 'Test Passed!!!'
+	nvprof ./v1.run
+	# diff test/conf-11.bin test/conf-11.ans
+	# @echo 'Test Passed!!!'
 test_v2: v2
-	./v2.run
-	diff test/conf-11.bin test/conf-11.ans
-	@echo 'Test Passed!!!'
+	nvprof ./v2.run
+	# diff test/conf-11.bin test/conf-11.ans
+	# @echo 'Test Passed!!!'
 test_v3: v3
-	./v3.run
-	diff test/conf-11.bin test/conf-11.ans
-	@echo 'Test Passed!!!'
+	nvprof ./v3.run
+	# diff test/conf-11.bin test/conf-11.ans
+	# @echo 'Test Passed!!!'
 
 v0: V0_sequential.o main.o
 	nvcc $(FLAGS) $(INCLUDES) V0_sequential.o main.o -o v0.run
